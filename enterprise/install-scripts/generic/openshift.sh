@@ -301,6 +301,7 @@ name=RHEL 6 base OS
 baseurl=${CONF_RHEL_REPO}
 enabled=1
 gpgcheck=0
+priority=2
 sslverify=false
 
 YUM
@@ -315,6 +316,7 @@ name=OpenShift Client
 baseurl=${CONF_REPOS_BASE}/Client/x86_64/os/
 enabled=1
 gpgcheck=0
+priority=1
 sslverify=false
 
 YUM
@@ -329,6 +331,7 @@ name=OpenShift Infrastructure
 baseurl=${CONF_REPOS_BASE}/Infrastructure/x86_64/os/
 enabled=1
 gpgcheck=0
+priority=1
 sslverify=false
 
 YUM
@@ -343,6 +346,7 @@ name=OpenShift Node
 baseurl=${CONF_REPOS_BASE}/Node/x86_64/os/
 enabled=1
 gpgcheck=0
+priority=1
 sslverify=false
 
 YUM
@@ -357,6 +361,7 @@ name=OpenShift JBossEAP
 baseurl=${CONF_REPOS_BASE}/JBoss_EAP6_Cartridge/x86_64/os/
 enabled=1
 gpgcheck=0
+priority=1
 sslverify=false
 
 YUM
@@ -374,6 +379,7 @@ configure_jbosseap_repo()
 name=jbosseap
 baseurl=${CONF_JBOSS_REPO_BASE}/jbeap/6/os/
 enabled=1
+priority=3
 gpgcheck=0
 
 YUM
@@ -393,6 +399,7 @@ configure_jbossews_repo()
 name=jbossews
 baseurl=${CONF_JBOSS_REPO_BASE}/jbews/1/os/
 enabled=1
+priority=3
 gpgcheck=0
 
 YUM
@@ -1832,12 +1839,24 @@ case "$CONF_INSTALL_METHOD" in
   (rhn)
      echo "Register with RHN using an activation key"
      rhnreg_ks --activationkey=${CONF_RHN_REG_ACTKEY} --profilename=${hostname}
-     broker && rhn-channel --add --channel rhel-x86_64-server-6-osop-1-rhc --user ${CONF_RHN_REG_NAME} --password ${CONF_RHN_REG_PASS}
-     broker && rhn-channel --add --channel rhel-x86_64-server-6-osop-1-infrastructure --user ${CONF_RHN_REG_NAME} --password ${CONF_RHN_REG_PASS}
-     node && rhn-channel --add --channel rhel-x86_64-server-6-osop-1-node --user ${CONF_RHN_REG_NAME} --password ${CONF_RHN_REG_PASS}
-     node && rhn-channel --add --channel rhel-x86_64-server-6-osop-1-jbosseap --user ${CONF_RHN_REG_NAME} --password ${CONF_RHN_REG_PASS}
-     node && rhn-channel --add --channel jbappplatform-6-x86_64-server-6-rpm --user ${CONF_RHN_REG_NAME} --password ${CONF_RHN_REG_PASS}
-     node && rhn-channel --add --channel jb-ews-1-x86_64-server-6-rpm --user ${CONF_RHN_REG_NAME} --password ${CONF_RHN_REG_PASS}
+     yum-config-manager --setopt=rhel-x86_64-server-6.priority=2 rhel-x86_64-server-6 --save
+
+     for channel in rhel-x86_64-server-6-osop-1-rhc rhel-x86_64-server-6-osop-1-infrastructure
+     do
+       broker && rhn-channel --add --channel ${channel} --user ${CONF_RHN_REG_NAME} --password ${CONF_RHN_REG_PASS}
+       yum-config-manager --setopt=${channel}.priority=1 ${channel} --save
+     done
+     for channel in rhel-x86_64-server-6-osop-1-node rhel-x86_64-server-6-osop-1-jbosseap
+     do
+       node && rhn-channel --add --channel ${channel} --user ${CONF_RHN_REG_NAME} --password ${CONF_RHN_REG_PASS}
+       yum-config-manager --setopt=${channel}.priority=1 ${channel} --save
+     done
+     for channel in jbappplatform-6-x86_64-server-6-rpm jb-ews-1-x86_64-server-6-rpm
+     do
+       node && rhn-channel --add --channel ${channel} --user ${CONF_RHN_REG_NAME} --password ${CONF_RHN_REG_PASS}
+       yum-config-manager --setopt=${channel}.priority=3 ${channel} --save
+     done
+
      if is_true "$CONF_OPTIONAL_REPO"
      then
        rhn-channel --add --channel rhel-x86_64-server-optional-6 --user ${CONF_RHN_REG_NAME} --password ${CONF_RHN_REG_PASS}
