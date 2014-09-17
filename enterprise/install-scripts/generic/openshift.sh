@@ -1800,7 +1800,7 @@ configure_datastore_add_replicants()
   # Configure the replica set.
   for replicant in ${datastore_replicants//,/ }
   do
-    if [[ ! "$replicant" =~ "$datastore_hostname" ]]
+    if [[ ! "$replicant" =~ "$hostname" ]]
     then
       # verify connectivity to $replicant before attempting to add it to the replica set
       # looks like we can rely on attempt to use mongo shell to connect, even if not
