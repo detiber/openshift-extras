@@ -6,6 +6,7 @@ require 'installer'
 require 'installer/exceptions'
 require 'installer/helpers'
 require 'installer/config'
+require 'tempfile'
 
 include Installer::Helpers
 
@@ -462,7 +463,7 @@ host_installation_order.each do |host_instance|
   filetext << "}\n"
 
   # Write it out so we can copy it to the target
-  hostfilepath = "/tmp/#{hostfile}"
+  hostfilepath = File.join(Dir.tmpdir, hostfile)
   if @puppet_template_only and ENV.has_key?('HOME')
     hostfilepath = ENV['HOME'] + "/#{hostfile}"
   end
@@ -564,7 +565,7 @@ host_installation_order.each do |host_instance|
 
     # Make the magic
     puts "#{host_instance.host}: Running the Puppet deployment. This step may take up to an hour."
-    run_apply = host_instance.exec_on_host!("puppet apply --verbose /tmp/#{hostfile} |& tee -a /tmp/openshift-deploy.log")
+    run_apply = host_instance.exec_on_host!("puppet apply --verbose #{Dir.tmpdir}/#{hostfile} |& tee -a #{Dir.tmpdir}/openshift-deploy.log")
     if not run_apply[:exit_code] == 0
       display_error_info(host_instance, run_apply, 'Puppet deployment exited with errors')
       exit 1
@@ -573,12 +574,12 @@ host_installation_order.each do |host_instance|
 
     if not @keep_assets
       puts "#{host_instance.host}: Cleaning up temporary files."
-      clean_up = host_instance.exec_on_host!("rm /tmp/#{hostfile}")
+      clean_up = host_instance.exec_on_host!("rm #{Dir.tmpdir}/#{hostfile}")
       if not clean_up[:exit_code] == 0
-        puts "#{host_instance.host}: Clean up of /tmp/#hostfile} failed; please remove this file manually."
+        puts "#{host_instance.host}: Clean up of #{Dir.tmpdir}/#{hostfile} failed; please remove this file manually."
       end
     else
-      puts "#{host_instance.host}: Keeping /tmp/#{hostfile}"
+      puts "#{host_instance.host}: Keeping #{Dir.tmpdir}/#{hostfile}"
     end
 
     if not host_instance.localhost?
@@ -616,7 +617,7 @@ else
   host_failures.each do |hostname|
     puts "  * #{hostname}"
   end
-  puts "Please investigate these failures by starting with the /tmp/openshift-deploy.log file on each host.\nExiting installation with errors."
+  puts "Please investigate these failures by starting with the #{Dir.tmpdir}/openshift-deploy.log file on each host.\nExiting installation with errors."
   exit 1
 end
 

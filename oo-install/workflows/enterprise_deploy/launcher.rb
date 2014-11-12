@@ -15,7 +15,7 @@ include Installer::Helpers
 # Stage 1: Handle ENV and ARGV input #
 ######################################
 @mongodb_port     = 27017
-@logfile          = '/tmp/openshift-deploy.log'
+@logfile          = File.join(Dir.tmpdir, 'openshift-deploy.log')
 
 # Check ENV for an alternate config file location.
 if ENV.has_key?('OO_INSTALL_CONFIG_FILE')
@@ -344,9 +344,9 @@ def execute_step_on_hosts(host_list, step)
 
       hostfile = @hostfiles[host_instance.host]
       hostfilename = File.basename(hostfile)
-      remotehostfile = "/tmp/#{hostfilename}"
-      openshiftsh = "#{File.dirname(__FILE__)}/openshift.sh"
-      remoteopenshiftsh = "/tmp/openshift.sh"
+      remotehostfile = File.join(Dir.tmpdir, hostfilename)
+      openshiftsh = File.join(File.dirname(__FILE__), 'openshift.sh')
+      remoteopenshiftsh = File.join(Dir.tmpdir, 'openshift.sh')
       if host_instance.localhost?
         copy_template    = `cp #{hostfile} #{remotehostfile}`
         # TODO: do not use predictable path for openshift.sh
@@ -368,7 +368,7 @@ def execute_step_on_hosts(host_list, step)
 
       puts "#{msg_prefix}Running the hostfile" if @debug
 
-      run_hostfile = host_instance.exec_on_host!("cd /tmp && ./#{hostfilename} |& tee -a #{@logfile} | stdbuf -oL -eL grep -i '^OpenShift:'\n")
+      run_hostfile = host_instance.exec_on_host!("cd #{Dir.tmpdir} && ./#{hostfilename} |& tee -a #{@logfile} | stdbuf -oL -eL grep -i '^OpenShift:'\n")
       if run_hostfile[:stdout].match(@abort_regex)
         display_error_info(host_instance, run_hostfile, 'Failed to run the hostfile.')
         exit 1
