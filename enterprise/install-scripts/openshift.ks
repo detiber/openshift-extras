@@ -2167,7 +2167,7 @@ configure_mmopenshift_selinux_policy()
   local req=selinux-policy-3.7.19-237.el6.noarch # no need if policy update released
   [[ $(rpm -q selinux-policy | sed "i$req" | sort -V | head -1 ) == $req ]] && return
   echo "Installing SELinux policy module for rsyslog7-mmopenshift per BZ 1096155"
-  local dir=$(mktemp -d /tmp/selinux.XXXXXXXX)
+  local dir=$(mktemp -d --tmpdir selinux.XXXXXXXX)
   pushd $dir
     cat <<POLICY > rsyslog7-mmopenshift.te
 
