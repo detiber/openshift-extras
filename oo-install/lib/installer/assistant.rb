@@ -2317,6 +2317,28 @@ module Installer
           end
         end
 
+        # If TMPDIR is set, then ensure it exists on remote system
+        unless ENV['TMPDIR'].nil? || ENV['TMPDIR'].empty?
+          say "\nVerifying #{ENV['TMPDIR']} exists...\n"
+          tmp_check = host_instance.exec_on_host!("[ -d #{ENV['TMPDIR']} ]")
+          if tmp_check[:exit_code] == 0
+            say "* #{ENV['TMPDIR']} found."
+          else
+            if concur("\n#{ENV['TMPDIR']} was not found on this host\nDo you want me to create it?")
+              create_tmp = host_instance.exec_on_host!("mkdir -p #{ENV['TMPDIR']}", false, true)
+              if create_tmp[:exit_code] == 0
+                say "* #{ENV['TMPDIR']} created successfully."
+              else
+                say "*ERROR - Could not create #{ENV['TMPDIR']}."
+                deployment_good = false
+              end
+            else
+              say "* ERROR - #{ENV['TMPDIR']} not found on this host."
+              deployment_good = false
+            end
+          end
+        end
+
         # Next deal with uninstalled packages.
         if uninstalled_pkgs.length > 0
           install_pkgs_text = ''

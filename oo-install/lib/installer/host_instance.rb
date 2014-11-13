@@ -275,11 +275,11 @@ module Installer
       @ssh_session.close unless @ssh_session.nil? or @ssh_session.closed?
     end
 
-    def exec_on_host!(command, display_output=false)
+    def exec_on_host!(command, display_output=false, no_sudo=false)
       if localhost?
-        local_exec!(prepare_command(command), display_output)
+        local_exec!(prepare_command(command, no_sudo), display_output)
       else
-        ssh_exec!(prepare_command(command), display_output)
+        ssh_exec!(prepare_command(command, no_sudo), display_output)
       end
     end
 
@@ -372,14 +372,17 @@ module Installer
       @ip_exec_path = path
     end
 
-    def prepare_command command
-      formatted = "PATH=${PATH}:#{ADMIN_PATHS} #{command}"
-      if not root_user?
-        if not localhost?
-          formatted = "sudo sh -c \'#{formatted}\'"
-        else
-          formatted = "sudo sh -c '#{formatted}'"
+    def prepare_command(command, no_sudo=false)
+      formatted = "export PATH=${PATH}:#{ADMIN_PATHS}; #{command}"
+      single_quote = "'"
+      unless localhost?
+        single_quote = "\'"
+        unless ENV['TMPDIR'].nil? || ENV['TMPDIR'].empty?
+          formatted = "export TMPDIR=#{ENV['TMPDIR']}; #{formatted}"
         end
+      end
+      unless root_user? or no_sudo
+        formatted = "sudo sh -c #{single_quote}#{formatted}#{single_quote}"
       end
       formatted
     end

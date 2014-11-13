@@ -28,8 +28,8 @@ then
   then
     echo "Using bundled assets."
   fi
-  cp INSTALLPKGNAME.tgz ${TMPDIR}/INSTALLPKGNAME.tgz
-elif [[ $OO_INSTALL_KEEP_ASSETS == 'true' && -e ${TMPDIR}/INSTALLPKGNAME.tgz ]]
+  cp INSTALLPKGNAME.tgz ${TMPDIR}INSTALLPKGNAME.tgz
+elif [[ $OO_INSTALL_KEEP_ASSETS == 'true' && -e ${TMPDIR}INSTALLPKGNAME.tgz ]]
 then
   if [ $OO_INSTALL_CONTEXT != 'origin_vm' ]
   then
