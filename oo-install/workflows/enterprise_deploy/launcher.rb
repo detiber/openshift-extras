@@ -171,11 +171,13 @@ def components_list host_instance
   values.sort.map{ |r| "#{r}"}.join(',')
 end
 
-def display_error_info host_instance, exec_info, message
+def display_error_info(host_instance, exec_info, message, stdout_filter=nil, stderr_filter=nil)
+  stdout = stdout_filter.nil? ? exec_info[:stdout] : exec_info[:stdout].match(stdout_filter)
+  stderr = stderr_filter.nil? ? exec_info[:stderr] : exec_info[:stderr].match(stderr_filter)
   puts [
     "#{host_instance.host}: #{message}",
-    "Output: #{exec_info[:stdout]}",
-    "Error: #{exec_info[:stderr]}",
+    "Output: #{stdout}",
+    "Error: #{stderr}",
     "Exiting installation on this host.",
   ].join("\n#{host_instance.host}: ")
 end
@@ -368,12 +370,13 @@ def execute_step_on_hosts(host_list, step)
 
       puts "#{msg_prefix}Running the hostfile" if @debug
 
-      run_hostfile = host_instance.exec_on_host!("cd #{Dir.tmpdir} && ./#{hostfilename} |& tee -a #{@logfile} | stdbuf -oL -eL grep -i '^OpenShift:'\n")
-      if run_hostfile[:stdout].match(@abort_regex)
-        display_error_info(host_instance, run_hostfile, 'Failed to run the hostfile.')
+      stdout_filter = /^OpenShift:/
+      run_hostfile = host_instance.exec_on_host!("ERR_PIPE=$(mktemp -u --tempdir oo-install-stderr-pipe}; OUT_PIPE=$(mktemp -u --tempdir oo-install-stdout-pipe}; mkfifo $ERR_PIPE $OUT_PIPE; tee -a #{@logfile} < $ERR_PIPE >$2 & err_log_pid=$!; tee -a #{@logfile} < $OUT_PIPE & out_log_pid=$!; cd #{Dir.tmpdir} > $OUT_PIPE 2> $ERR_PIPE && stdbuf -oL -eL ./#{hostfilename} > $OUT_PIPE 2> $ERR_PIPE; wait $err_log_pid $out_log_pid")
+      if run_hostfile[:exit_code] != 0 or run_hostfile[:stdout].match(@abort_regex)
+        display_error_info(host_instance, run_hostfile, 'Failed to run the hostfile.', stdout_filter, nil)
         exit 1
       else
-        output=run_hostfile[:stdout].split("\n").map{ |line| "\t#{line}"}.join("\n")
+        output=run_hostfile[:stdout].match(stdout_filter).split("\n").map{ |line| "\t#{line}"}.join("\n")
         puts "#{host_instance.host}: \n#{output}\n"
       end
 
