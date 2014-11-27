@@ -371,7 +371,7 @@ def execute_step_on_hosts(host_list, step)
       puts "#{msg_prefix}Running the hostfile" if @debug
 
       stdout_filter = /^OpenShift:/
-      run_hostfile = host_instance.exec_on_host!("ERR_PIPE=$(mktemp -u --tempdir oo-install-stderr-pipe}; OUT_PIPE=$(mktemp -u --tempdir oo-install-stdout-pipe}; mkfifo $ERR_PIPE $OUT_PIPE; tee -a #{@logfile} < $ERR_PIPE >$2 & err_log_pid=$!; tee -a #{@logfile} < $OUT_PIPE & out_log_pid=$!; cd #{Dir.tmpdir} > $OUT_PIPE 2> $ERR_PIPE && stdbuf -oL -eL ./#{hostfilename} > $OUT_PIPE 2> $ERR_PIPE; wait $err_log_pid $out_log_pid")
+      run_hostfile = host_instance.exec_on_host!("ERR_PIPE=$(mktemp -u --tempdir oo-install-stderr-pipe); OUT_PIPE=$(mktemp -u --tempdir oo-install-stdout-pipe); mkfifo $ERR_PIPE $OUT_PIPE; tee -a #{@logfile} < $ERR_PIPE >$2 & err_log_pid=$!; tee -a #{@logfile} < $OUT_PIPE & out_log_pid=$!; cd #{Dir.tmpdir} > $OUT_PIPE 2> $ERR_PIPE && stdbuf -oL -eL ./#{hostfilename} > $OUT_PIPE 2> $ERR_PIPE; wait $err_log_pid $out_log_pid")
       if run_hostfile[:exit_code] != 0 or run_hostfile[:stdout].match(@abort_regex)
         display_error_info(host_instance, run_hostfile, 'Failed to run the hostfile.', stdout_filter, nil)
         exit 1
