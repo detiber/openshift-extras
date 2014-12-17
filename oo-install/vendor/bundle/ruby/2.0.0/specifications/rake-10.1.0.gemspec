@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+# stub: rake 10.1.0 ruby lib
 
 Gem::Specification.new do |s|
   s.name = "rake"
@@ -18,7 +19,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.required_ruby_version = Gem::Requirement.new(">= 1.8.6")
   s.rubyforge_project = "rake"
-  s.rubygems_version = "2.0.14"
+  s.rubygems_version = "2.1.11"
   s.summary = "Ruby based make-like utility."
 
   if s.respond_to? :specification_version then

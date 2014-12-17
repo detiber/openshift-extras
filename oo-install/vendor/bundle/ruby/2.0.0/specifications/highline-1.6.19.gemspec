@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+# stub: highline 1.6.19 ruby lib
 
 Gem::Specification.new do |s|
   s.name = "highline"
@@ -16,6 +17,6 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--title", "HighLine Documentation", "--main", "README"]
   s.require_paths = ["lib"]
   s.rubyforge_project = "highline"
-  s.rubygems_version = "2.0.14"
+  s.rubygems_version = "2.1.11"
   s.summary = "HighLine is a high-level command-line IO library."
 end

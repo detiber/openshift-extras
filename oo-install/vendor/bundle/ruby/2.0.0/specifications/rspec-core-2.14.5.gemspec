@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+# stub: rspec-core 2.14.5 ruby lib
 
 Gem::Specification.new do |s|
   s.name = "rspec-core"
@@ -17,7 +18,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubyforge_project = "rspec"
-  s.rubygems_version = "2.0.14"
+  s.rubygems_version = "2.1.11"
   s.summary = "rspec-core-2.14.5"
 
   if s.respond_to? :specification_version then

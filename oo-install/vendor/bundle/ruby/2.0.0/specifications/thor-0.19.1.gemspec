@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+# stub: thor 0.19.1 ruby lib
 
 Gem::Specification.new do |s|
   s.name = "thor"
@@ -14,7 +15,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://whatisthor.com/"
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
-  s.rubygems_version = "2.0.14"
+  s.rubygems_version = "2.1.11"
   s.summary = "Thor is a toolkit for building powerful command-line interfaces."
 
   if s.respond_to? :specification_version then

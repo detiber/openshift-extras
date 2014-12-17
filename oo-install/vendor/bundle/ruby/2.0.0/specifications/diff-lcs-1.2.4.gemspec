@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+# stub: diff-lcs 1.2.4 ruby lib
 
 Gem::Specification.new do |s|
   s.name = "diff-lcs"
@@ -17,7 +18,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--main", "README.rdoc"]
   s.require_paths = ["lib"]
   s.rubyforge_project = "diff-lcs"
-  s.rubygems_version = "2.0.14"
+  s.rubygems_version = "2.1.11"
   s.summary = "Diff::LCS computes the difference between two Enumerable sequences using the McIlroy-Hunt longest common subsequence (LCS) algorithm"
 
   if s.respond_to? :specification_version then

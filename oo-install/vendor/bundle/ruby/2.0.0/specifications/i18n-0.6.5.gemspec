@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+# stub: i18n 0.6.5 ruby lib
 
 Gem::Specification.new do |s|
   s.name = "i18n"
@@ -13,7 +14,7 @@ Gem::Specification.new do |s|
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
   s.rubyforge_project = "[none]"
-  s.rubygems_version = "2.0.14"
+  s.rubygems_version = "2.1.11"
   s.summary = "New wave Internationalization support for Ruby"
 
   if s.respond_to? :specification_version then

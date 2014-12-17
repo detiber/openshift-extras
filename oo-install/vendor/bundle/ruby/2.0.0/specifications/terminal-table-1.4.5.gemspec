@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+# stub: terminal-table 1.4.5 ruby lib
 
 Gem::Specification.new do |s|
   s.name = "terminal-table"
@@ -16,6 +17,6 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.required_ruby_version = Gem::Requirement.new("> 0.0.0")
   s.rubyforge_project = "terminal-table"
-  s.rubygems_version = "2.0.14"
+  s.rubygems_version = "2.1.11"
   s.summary = "Simple, feature rich ascii table generation library"
 end
