@@ -69,7 +69,8 @@ setup(
     # installed, specify them here.  If using Python 2.6 or less, then these
     # have to be included in MANIFEST.in as well.
     package_data={
-        'ooinstall': ['installer.cfg.template.yml', 'ansible.cfg'],
+        'ooinstall.ansible_wrapper': ['ansible.cfg'],
+        'ooinstall.config': ['installer.cfg.template.yml']
     },
 
     # Although 'package_data' is the preferred approach, in some case you may
@@ -83,7 +84,7 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points={
         'console_scripts': [
-            'oo-install=ooinstall.cli_installer:main',
+            'oo-install=ooinstall.cli.installer:main',
         ],
     },
 )

@@ -1,16 +1,12 @@
 import click
 import re
-import os
-import sys
-from ooinstall import install_transactions
-from ooinstall import OOConfig
+from ooinstall.ansible_wrapper import install_transactions
+from ooinstall.config.oo_config import OOConfig
 
-def validate_ansible_dir(ctx, param, path):
+def validate_ansible_dir(path):
     if not path:
-        raise click.BadParameter("An ansible path must be provided".format(path))
+        raise click.BadParameter('A valid ansible path must be provided')
     return path
-    # if not os.path.exists(path)):
-    #     raise click.BadParameter("Path \"{}\" doesn't exist".format(path))
 
 def is_valid_hostname(hostname):
     print hostname
@@ -18,11 +14,10 @@ def is_valid_hostname(hostname):
         return False
     if hostname[-1] == ".":
         hostname = hostname[:-1] # strip exactly one dot from the right, if present
-    allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
+    allowed = re.compile(r"(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
     return all(allowed.match(x) for x in hostname.split("."))
 
 def validate_hostname(ctx, param, hosts):
-    # if '' == hostname or is_valid_hostname(hostname):
     for hostname in hosts:
         if not is_valid_hostname(hostname):
             raise click.BadParameter('"{}" appears to be an invalid hostname. Please double-check this value and re-enter it.'.format(hostname))
@@ -76,10 +71,6 @@ def collect_hosts():
             break
     return hosts
 
-# def main():
-#     cli_installer = CLIInstaller()
-#     cli_installer.main()
-
 @click.command()
 @click.option('--configuration', '-c',
               type=click.Path(file_okay=True,
@@ -94,7 +85,6 @@ def collect_hosts():
                               dir_okay=True,
                               writable=True,
                               readable=True),
-              # callback=validate_ansible_dir,
               envvar='OO_ANSIBLE_DIRECTORY')
 @click.option('--host', '-h', multiple=True, callback=validate_hostname)
 def main(configuration, ansible_directory, host):
@@ -105,7 +95,7 @@ def main(configuration, ansible_directory, host):
         ansible_directory = oo_cfg.settings.get('ansible_directory', '')
     else:
         oo_cfg.settings['ansible_directory'] = ansible_directory
-    validate_ansible_dir(None, None, ansible_directory)
+    validate_ansible_dir(ansible_directory)
     install_transactions.set_config(oo_cfg)
     if not host:
         if oo_cfg.settings.get('hosts'):
@@ -117,4 +107,4 @@ def main(configuration, ansible_directory, host):
     install_transactions.default_facts(host)
 
 if __name__ == '__main__':
-    main()
+    main(None, "../../../../../openshift-ansible", None)
